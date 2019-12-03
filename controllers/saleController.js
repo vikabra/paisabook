@@ -2,9 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 var { Sale } = require('../models/sale.js');
-var { Shop } = require('../models/shop.js');
-var { PaymentStatus } = require('../models/payment_status.js');
-var { Item } = require('../models/item.js');
+var { Transaction } = require('../models/transaction.js');
 
 // => localhost:3002/sales
 router.get('/', (req, res) => {
@@ -16,54 +14,37 @@ router.get('/', (req, res) => {
 
 // => localhost:3002/sales
 router.post('/', (req, res) => {
-  var payment_type = PaymentStatus.findById(req.params.payment_type_id);
-  var shop = Shop.findById(req.params.shop_id, (err, docs) => {
-    console.log("Errors so far: " + JSON.stringify(docs));
-    if (!err) {
-      var shop = docs; 
-      console.log("Shop details found:" + JSON.stringify(shop));
-      // first find the item that is being sold and initialize it
-      var item = Item.findById(req.params.item_id, (err, docs) => {
-        // i.e. if the item doesn't exist create it on the fly, but now 
-        // throwing an error
-        if (err) {
-          res.status(400).send(`No item with given ID: ${req.params.shop_id}`);
-        }
-        else {
-          var item = docs;
-        }
-      });
-      // this step sets up the attributes of the sale
-      // and persists it in the DB
-      var sale = new Sale({
-        description: req.body.description,
+  // this step sets up the attributes of the sale
+  // and persists it in the DB
+  var sale = new Sale({
+    description: req.body.stock_item,
+    quantity: req.body.quantity,
+    retail_price: req.body.retail_price,
+    discount: req.body.discount,
+    invoice_needed: req.body.invoice_needed,
+    amount_paid: req.body.amount_paid
+  });
+  sale.save((err, docs) => {
+    if (!err) { 
+      // now creating the transaction object so that it can be available
+      // inside transactions later
+      var transaction = new Transaction({
+        transaction_type: "Sale",
+        amount_paid: req.body.amount_paid,
         quantity: req.body.quantity,
-        retail_price: req.body.retail_price,
         discount: req.body.discount,
-        invoice_needed: req.body.invoice_needed,
-        shop: shop.id,
-        payment_type: payment_type.id,
-        item: item.id
-      });
-      sale.save((err, docs) => {
-        if (!err) { 
-          // now creating the trail object so that it can be available
-          // inside transactions later
-          // var transaction = new transaction({
-          //   shop: shop.id,
-          //   sale: sale.id,
-          //   item: item.id,
-          //   payment_status: payment_status.id
-          // })
-          // res.send(docs); 
+        retail_price: req.body.retail_price,
+        stock_item: req.body.stock_item
+      })
+      transaction.save((err, docs) => {
+        if (err) {
+          console.log("Error in saving sales data: " + JSON.stringify(err, undefined, 2))  
         }
-        else { 
-          console.log("Error in saving sales data: " + JSON.stringify(err, undefined, 2)); 
-        }
-      });
-    }
+      })
+      res.send(docs); 
+    } 
     else { 
-      return res.status(400).send(`No shop with given ID: ${req.params.shop_id}`)
+      console.log("Error in saving sales data: " + JSON.stringify(err, undefined, 2)); 
     }
   });
 });

@@ -6,10 +6,8 @@ var Sale = mongoose.model("Sale", {
   retail_price: {type: Number},
   discount: {type: Number},
   invoice_needed: {type: Boolean},
-  item: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Item'
-  }
+  stock_item: {type: String},
+  amount_paid: {type: Number}
 });
 
 module.exports = { Sale };
