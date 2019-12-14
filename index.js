@@ -15,4 +15,4 @@ app.listen(process.env.PORT || 3002, () => console.log("Server started at port 3
 
 app.use('/sales', SaleController);
 app.use('/expenses', expenseController);
-app.use('/stockItem',StockItemController);
+app.use('/stockitems',StockItemController);

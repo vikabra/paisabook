@@ -13,7 +13,7 @@ var PaymentStatus = mongoose.model("PaymentStatus", {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Employee'
   },
-  payment_type: {type: String}, //sale or expense
+  payment_type: {type: String}, //sale or expense or stock
   added_on: {type: Date},
   amt_paid: {type: Number},
   amt_due: {type: Number},
