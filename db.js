@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb://localhost:27017/Paisabook", (error) => {
+mongoose.connect(process.env.MONGOLAB_URI||"mongodb://localhost:27017/Paisabook", (error) => {
   if (!error)
     console.log("Successful connection!");
   else

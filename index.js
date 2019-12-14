@@ -11,7 +11,8 @@ var expenseController = require('./controllers/expenseController.js');
 var app = express();
 app.use(bodyParser.json());
 
-app.listen(3002, () => console.log("Server started at port 3002"));
+app.listen(process.env.PORT || 3002, () => console.log("Server started at port 3002"));
 
 app.use('/sales', SaleController);
 app.use('/expenses', expenseController);
+app.use('/stockItem',StockItemController);
